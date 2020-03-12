@@ -1,0 +1,70 @@
+﻿#content_page
+{
+	left:0px;
+	top:0px;
+	position:absolute;	
+	z-index:1;
+}
+
+#banner
+{
+	left:0px;
+	top:0px;
+	position:absolute;	
+	z-index:1;
+}
+
+#service_menu
+{
+	left:0px;
+	top:72px;
+	width:1920px;
+	position:absolute;
+	z-index:1;
+}
+
+#content_panel
+{
+	left:0px;
+	top:122px;
+	position:absolute;	
+	z-index:1;
+}
+
+.popover
+{
+	left: -2000px;
+	top: -2000px;
+	position:absolute;
+	z-index:0;
+}
+
+.date_popover
+{
+	opacity: .7;
+}
+
+body
+{
+  overflow-x: scroll;
+  overflow-y: scroll;
+  background-color:gray;
+}
+
+a, img, area, div
+{
+    border:none;
+    outline:none;
+    outline-style:none;
+}
+
+.debug
+{
+    border:thick;
+    outline:fuchsia;
+    outline-style:solid;
+	
+	
+}
+
+
