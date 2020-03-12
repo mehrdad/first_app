@@ -1,0 +1,1051 @@
+﻿<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	
+	<title>City National Bank Demo</title>
+	
+	<link href="../../css/styles.css" rel="stylesheet" type="text/css" />
+	
+	<script type="text/javascript" src="../../js/jquery-1.11.3.min.js"></script>	
+	<script type="text/javascript" src="../../js/jquery-ui.min.js"></script>	
+	<script type="text/javascript" src="../../js/jquery.ui.touch-punch.min.js"></script>	
+
+	<script type="text/javascript" src="../../js/images.js"></script>
+	<script type="text/javascript" src="../../js/gst_demo.js"></script>	
+
+	<script type="text/javascript">
+	 
+		function initPage()
+		{
+		
+			$('#widget1_id').draggable( {
+				revert: true
+			} );
+			$('#widget1_id').droppable( {
+				drop: handleDropEvent
+			} );
+		  
+			$('#widget2_id').draggable( {
+				revert: true
+			} );
+			$('#widget2_id').droppable( {
+				drop: handleDropEvent
+			} );
+
+			$('#column1_id').draggable( {
+				revert: true
+			} );
+			$('#column1_id').droppable( {
+				drop: handleDropEvent
+			} );
+		  
+			$('#column2_id').draggable( {
+				revert: true
+			} );
+			$('#column2_id').droppable( {
+				drop: handleDropEvent
+			} );
+		
+			if (getQueryVariable("hotspots_on") != '')
+			{
+				hotspots_on = (getQueryVariable("hotspots_on") == 'true');			
+			}
+
+			if (hotspots_on == false)
+			{
+				$('.hotspot_layer').css('opacity', '0.0');			
+			}
+
+			hide_hotspots_toggle = (getQueryVariable("hide_hotspots_toggle") == 'true');
+
+			var contentId = getQueryVariable("contentId");
+
+			if (contentId.length < 1)
+			{
+				contentId = "home_default";
+				if (hide_hotspots_toggle)
+				{
+					changeImage('banner', 'banner_no_toggle', true);
+				}
+				else
+				{
+					changeImage('banner', 'banner', true);
+				}
+				changeImage("content_panel", contentId, true);
+			}
+			else
+			{
+				if (contentId == 'profile_confirm')
+				{
+					if (hide_hotspots_toggle)
+					{
+						changeImage('banner', 'banner_indented_no_toggle', true);
+					}
+					else
+					{
+						changeImage('banner', 'banner_indented', true);
+					}
+					changeImage('service_menu', 'svc_menu_dashboard_indented', false);			
+				}
+				else
+				{
+					if (hide_hotspots_toggle)
+					{
+						changeImage('banner', 'banner_no_toggle', true);
+					}
+					else
+					{
+						changeImage('banner', 'banner', true);
+					}
+					changeImage('service_menu', 'svc_menu_dashboard', false);			
+				}
+			
+				changeImage("content_panel", contentId, true);
+			}
+			
+			setLocalHotspots();
+			
+/*			
+			changeImage('widget1_img_id', widget1_img, false);	
+			changeImage('widget2_img_id', widget2_img, false);	
+*/			
+		}
+
+
+
+
+		 
+		function handleDropEvent( event, ui )
+		{
+			var draggable = ui.draggable;
+		  
+		    var sourceImgId = draggable.attr('id') + ' img';
+		    var destinationImgId = event.target.id + ' img';
+		
+			var sourceImgSrc = $('#' + draggable.attr('id') + ' img').attr('src');
+			var sourceImgMap = $('#' + draggable.attr('id') + ' img').attr('usemap');
+			var destinationImgSrc = $('#' + event.target.id + ' img').attr('src');
+			var destinationImgMap = $('#' + event.target.id + ' img').attr('usemap');
+			swapImageSrcAndMap(sourceImgId, destinationImgSrc, destinationImgMap, false);
+			swapImageSrcAndMap(destinationImgId, sourceImgSrc, sourceImgMap, false);
+			
+//			if ((sourceImgSrc.localeCompare("../../images/home/chart_widget.png") == 0) || (sourceImgSrc.localeCompare("../../images/home/chart_widget_hs.png") == 0))
+//			{
+//			    current_shortcuts_widget_img_id = sourceImgId;
+//			    current_chart_widget_img_id = destinationImgId;
+//			}
+//			else if ((destinationImgSrc.localeCompare("../../images/home/chart_widget.png") == 0) || (destinationImgSrc.localeCompare("../../images/home/chart_widget_hs.png") == 0))
+//
+//			{
+//			    current_shortcuts_widget_img_id = destinationImgId;
+//			    current_chart_widget_img_id = sourceImgId;
+//			}
+
+		    var sourceDivId = draggable.attr('id');
+		    var destinationDivId = event.target.id;
+		    var sourceDivHeight = $("#" + sourceDivId).height();
+		    var destinationDivHeight = $("#" + destinationDivId).height();
+		    
+		    
+			$("#" + sourceDivId).css('height', destinationDivHeight);
+			$("#" + destinationDivId).css('height', sourceDivHeight);
+			
+			var temp_widget_img = widget1_img;
+			widget1_img = widget2_img;
+			widget2_img = temp_widget_img;
+
+//			var temp_saved_widget_map = saved_widget1_map;
+//			saved_widget1_map = saved_widget2_map;
+//			saved_widget2_map = temp_saved_widget_map;
+			
+//			hideModalPopover();
+		}
+		
+		function localToggleHotspots()
+		{
+			toggleHotspots();
+			
+			setLocalHotspots();
+		}
+
+		function setLocalHotspots()
+		{
+			if (hotspots_on == true)
+			{
+				$('#widget1_img_id').attr('src', '../../images/home/notification_widget_hs.png');		
+				$('#widget2_img_id').attr('src', '../../images/home/qt_widget_hs.png');		
+
+				$('#column1_img_id').attr('src', '../../images/home/s_ledger_only_hs.png');		
+				$('#column2_img_id').attr('src', '../../images/home/s_available_only_hs.png');		
+			}
+			else
+			{
+				$('#widget1_img_id').attr('src', '../../images/home/notification_widget.png');		
+				$('#widget2_img_id').attr('src', '../../images/home/qt_widget.png');		
+
+				$('#column1_img_id').attr('src', '../../images/home/s_ledger_only.png');		
+				$('#column2_img_id').attr('src', '../../images/home/s_available_only.png');		
+			}
+		
+		}
+	 
+	</script>
+	
+</head>
+
+<body onload="javascript:initPage()">
+
+	<!-- BANNER -->
+	<div id="banner" onmouseover="javascript:hideMenus();">
+		<div class="image_layer" style="top:0px;left:0px;position:absolute">
+			<img class="disableable" src="../../images/banner/banner.png" usemap="#banner_map" alt=""/>
+		</div>
+		
+		<div class="hotspot_layer" style="top:0px;left:0px;position:absolute">
+			<img class="disableable" src="../../images/banner/banner_hs.png" usemap="#banner_map" alt=""/>
+		</div>
+
+		<map name="banner_map" id="banner_map">		
+	        <area shape="rect" coords="890,0,1015,28" href="javascript:localToggleHotspots()" alt="Toggle Hotspots"/>
+	        <area shape="rect" coords="1016,0,1030,15" href="javascript:hideHotspotsToggle()" alt="Hotspots X-Close Button"/>	
+
+	        <area shape="rect" coords="1394,40,1496,63" href="../home/home.html" onclick="location.href=this.href+'?contentId=profile_confirm&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;" alt="My Profile Button"/>
+    	</map>
+
+		<map name="banner_indented_map" id="banner_indented_map">		
+	        <area shape="rect" coords="890,0,1015,28" href="javascript:localToggleHotspots()" alt="Toggle Hotspots"/>
+	        <area shape="rect" coords="1016,0,1030,15" href="javascript:hideHotspotsToggle2('banner_indented_no_toggle')" alt="Hotspots X-Close Button"/>	
+
+	        <area shape="rect" coords="1394,40,1496,63" href="../home/home.html" onclick="location.href=this.href+'?contentId=profile_confirm&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;" alt="My Profile Button"/>
+    	</map>
+	    
+		<map name="banner_no_toggle_map" id="banner_no_toggle_map">
+	        <area shape="rect" coords="1394,40,1496,63" href="../home/home.html" onclick="location.href=this.href+'?contentId=profile_confirm&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;" alt="My Profile Button"/>
+	    </map>	    
+	</div>
+
+	<!-- SERVICE MENU -->
+	<div id="service_menu" class="basic-sticky-example">
+		<div class="image_layer" style="top:0px;left:0px;position:absolute">
+			<img class="disableable" src="../../images/navigation/svc_menu_home.png" usemap="#service_menu_map" alt=""/>
+
+			<map name="service_menu_map" id="service_menu_map">'
+			    <area shape="rect" coords="297,1,409,43"    href="home.html" onclick="location.href=this.href+'?&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"        alt="Dashboard" />	        
+				<area shape="rect" coords="410,1,521,43"    href="javascript:changeImage('service_menu', 'svc_menu_accounts', false);showPopover('menu_accounts', '414', '119', true);"                        alt="Accounts" />	        
+			    <area shape="rect" coords="522,1,636,43"    href="javascript:changeImage('service_menu', 'svc_menu_transfers', false);showPopover('menu_transfers', '526', '119', true);"                      alt="Transfers" />	        
+			    <area shape="rect" coords="637,1,754,43"    href="javascript:changeImage('service_menu', 'svc_menu_payments', false);showPopover('menu_payments', '641', '119', true);"                        alt="Payments" />	        
+			    <area shape="rect" coords="755,1,901,43"    href="javascript:changeImage('service_menu', 'svc_menu_fraud_control', false);showPopover('menu_fraud_control', '758', '119', true);"              alt="Fraud Control" />	        
+			    <area shape="rect" coords="902,1,994,43"    href="javascript:changeImage('service_menu', 'svc_menu_administration', false);showPopover('menu_administration', '906', '119', true);"            alt="Administration" />	        
+			</map>
+
+			<map name="svc_menu_dashboard_indented_map" id="svc_menu_dashboard_indented_map">'
+			    <area shape="rect" coords="382,1,488,43"    href="home.html" onclick="location.href=this.href+'?&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"        alt="Dashboard" />	        
+				<area shape="rect" coords="493,1,602,43"    href="javascript:changeImage('service_menu', 'svc_menu_accounts_indented', false);showPopover('menu_accounts', '497', '119', true);"                        alt="Accounts" />	        
+			    <area shape="rect" coords="605,1,717,43"    href="javascript:changeImage('service_menu', 'svc_menu_transfers_indented', false);showPopover('menu_transfers', '609', '119', true);"                      alt="Transfers" />	        
+			    <area shape="rect" coords="719,1,835,43"    href="javascript:changeImage('service_menu', 'svc_menu_payments_indented', false);showPopover('menu_payments', '723', '119', true);"                        alt="Payments" />	        
+			    <area shape="rect" coords="837,1,982,43"    href="javascript:changeImage('service_menu', 'svc_menu_fraud_control_indented', false);showPopover('menu_fraud_control', '841', '119', true);"              alt="Fraud Control" />	        
+			    <area shape="rect" coords="985,1,1075,43"   href="javascript:changeImage('service_menu', 'svc_menu_administration_indented', false);showPopover('menu_administration', '989', '119', true);"            alt="Administration" />	        
+			</map>
+		</div>
+	</div>
+
+	<div id="menu_accounts" class="popover menu_popover" style="border-width:0px;float:left">
+		<div class="image_layer" style="top:0px;left:0px;position:absolute">
+			<img src="../../images/navigation/menu_accounts.png" usemap="#menu_accounts_map" alt=""/>
+		</div>
+
+		<map name="menu_accounts_map" id="menu_accounts_map">
+		    <area shape="rect" coords="0,9,185,40"    href="../accounts/accounts.html" onclick="location.href=this.href+'?contentId=accounts_balances_activity&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;" onmouseover="javascript:changeImage('menu_accounts', 'menu_accounts_balances_activity', false);"  onmouseout="javascript:changeImage('menu_accounts', 'menu_accounts', false);" alt="Balances and Activity"/>
+		    <area shape="rect" coords="0,42,185,74"   href="../accounts/accounts.html" onclick="location.href=this.href+'?contentId=accounts_stmts&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"             onmouseover="javascript:changeImage('menu_accounts', 'menu_accounts_stmts', false);"              onmouseout="javascript:changeImage('menu_accounts', 'menu_accounts', false);" alt="Statements"/>
+		    <area shape="rect" coords="0,76,185,107"  href="../accounts/accounts.html" onclick="location.href=this.href+'?contentId=accounts_checks_stops_inq&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"  onmouseover="javascript:changeImage('menu_accounts', 'menu_accounts_checks_stops_inq', false);"   onmouseout="javascript:changeImage('menu_accounts', 'menu_accounts', false);" alt="Checks and Stops Inquiry"/>
+		    <area shape="rect" coords="0,109,185,141" href="../accounts/accounts.html" onclick="location.href=this.href+'?contentId=accounts_stop_request&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"      onmouseover="javascript:changeImage('menu_accounts', 'menu_accounts_stop_request', false);"       onmouseout="javascript:changeImage('menu_accounts', 'menu_accounts', false);" alt="Stop Pay Request"/>
+		    <area shape="rect" coords="0,143,185,174" href="../accounts/accounts.html" onclick="location.href=this.href+'?contentId=accounts_deposit_images&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"    onmouseover="javascript:changeImage('menu_accounts', 'menu_accounts_deposit_images', false);"     onmouseout="javascript:changeImage('menu_accounts', 'menu_accounts', false);" alt="Deposit Images"/>
+		    <area shape="rect" coords="0,176,185,208" href="../accounts/accounts.html" onclick="location.href=this.href+'?contentId=accounts_wire_activity&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"     onmouseover="javascript:changeImage('menu_accounts', 'menu_accounts_wire_activity', false);"      onmouseout="javascript:changeImage('menu_accounts', 'menu_accounts', false);" alt="Transaction Search"/>
+		    <area shape="rect" coords="0,210,185,242" href="../accounts/accounts.html" onclick="location.href=this.href+'?contentId=accounts_exports&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"           onmouseover="javascript:changeImage('menu_accounts', 'menu_accounts_exports', false);"            onmouseout="javascript:changeImage('menu_accounts', 'menu_accounts', false);" alt="Export History"/>
+		    <area shape="rect" coords="0,244,185,276" href="../accounts/accounts.html" onclick="location.href=this.href+'?contentId=accounts_reports&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"           onmouseover="javascript:changeImage('menu_accounts', 'menu_accounts_reports', false);"            onmouseout="javascript:changeImage('menu_accounts', 'menu_accounts', false);" alt="Account Reports"/>
+		</map>
+	</div>
+
+	<div id="menu_transfers" class="popover menu_popover">    
+		<div class="image_layer" style="top:0px;left:0px;position:absolute">
+			<img src="../../images/navigation/menu_transfers.png" usemap="#menu_transfers_map" alt=""/>
+		</div>
+
+		<map name="menu_transfers_map" id="menu_transfers_map">	
+	        <area shape="rect" coords="0,9,158,42"     href="../transfers/transfers.html" onclick="location.href=this.href+'?contentId=transfers_transfer_center&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"          onmouseover="javascript:changeImage('menu_transfers', 'menu_transfers_transfers', false);"        onmouseout="javascript:changeImage('menu_transfers', 'menu_transfers', false);"     alt="Transfers"/>
+	        <area shape="rect" coords="0,43,158,75"    href="../transfers/transfers.html" onclick="location.href=this.href+'?contentId=transfers_template_center&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"          onmouseover="javascript:changeImage('menu_transfers', 'menu_transfers_templates', false);"        onmouseout="javascript:changeImage('menu_transfers', 'menu_transfers', false);"     alt="Transfer Templates"/>
+	        <area shape="rect" coords="0,76,158,108"   href="../transfers/transfers.html" onclick="location.href=this.href+'?contentId=transfers_create_transfer_single&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"   onmouseover="javascript:changeImage('menu_transfers', 'menu_transfers_quick_transfer', false);"   onmouseout="javascript:changeImage('menu_transfers', 'menu_transfers', false);"     alt="Quick Transfer"/>
+	    </map>
+	</div>
+
+	<div id="menu_payments" class="popover menu_popover" style="border-width:0px;float:left">
+		<div class="image_layer" style="top:0px;left:0px;position:absolute">
+			<img src="../../images/navigation/menu_payments.png" usemap="#menu_payments_map" alt=""/>
+		</div>
+
+		<map name="menu_payments_map" id="menu_payments_map">
+			<area shape="rect" coords="0,9,159,41"    href="../payments/bill_pay.html" onclick="location.href=this.href+'?contentId=payments_bill_pay&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"       onmouseover="javascript:changeImage('menu_payments', 'menu_pmts_bill_pay', false);"       onmouseout="javascript:changeImage('menu_payments', 'menu_payments', false);" alt="Bill Pay"/>
+	        <area shape="rect" coords="0,42,159,76"   href="../payments/payments.html" onclick="location.href=this.href+'?contentId=payments_template_center&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"                      onmouseover="javascript:changeImage('menu_payments', 'menu_pmts_payments', false);"     onmouseout="javascript:changeImage('menu_payments', 'menu_payments', false);" alt="Payments"/>
+	        <area shape="rect" coords="0,77,159,108"  href="../payments/payments.html" onclick="location.href=this.href+'?contentId=payments_import_profiles&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"                      onmouseover="javascript:changeImage('menu_payments', 'menu_pmts_templates', false);"    onmouseout="javascript:changeImage('menu_payments', 'menu_payments', false);" alt="Payment Templates"/>
+		    <area shape="rect" coords="0,109,159,143" href="../payments/payments.html" onclick="location.href=this.href+'?contentId=payments_recipients&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"                           onmouseover="javascript:changeImage('menu_payments', 'menu_pmts_payees', false);"       onmouseout="javascript:changeImage('menu_payments', 'menu_payments', false);" alt="Payees"/> 
+			<area shape="rect" coords="0,144,159,175" href="../payments/payments.html" onclick="location.href=this.href+'?contentId=payments_recurr_exceptions&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"  onmouseover="javascript:changeImage('menu_payments', 'menu_pmts_exceptions', false);"     onmouseout="javascript:changeImage('menu_payments', 'menu_payments', false);" alt="Recurring Exceptions"/>
+	    </map>
+	</div>
+
+	<div id="menu_fraud_control" class="popover menu_popover" style="border-width:0px;float:left">    
+		<div class="image_layer" style="top:0px;left:0px;position:absolute">
+			<img src="../../images/navigation/menu_fraud.png" usemap="#menu_fraud_control_map" alt=""/>
+		</div>
+
+		<map name="menu_fraud_control_map" id="menu_fraud_control_map">			    
+	        <area shape="rect" coords="0,9,158,41"     href="../fraud_control/fraud_control.html" onclick="location.href=this.href+'?contentId=fraud_control_ppay&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"       onmouseover="javascript:changeImage('menu_fraud_control', 'menu_fraud_exceptions', false);"   onmouseout="javascript:changeImage('menu_fraud_control', 'menu_fraud_control', false);"     alt="Exceptions"/>
+	        <area shape="rect" coords="0,42,158,76"    href="../fraud_control/fraud_control.html" onclick="location.href=this.href+'?contentId=fraud_control_issue_mnte&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;" onmouseover="javascript:changeImage('menu_fraud_control', 'menu_fraud_issues', false);"       onmouseout="javascript:changeImage('menu_fraud_control', 'menu_fraud_control', false);"     alt="Check Issues"/>
+	    </map>
+	</div>
+
+	<div id="menu_administration" class="popover menu_popover" style="border-width:0px;float:left">
+		<div class="image_layer" style="top:0px;left:0px;position:absolute">
+			<img src="../../images/navigation/menu_administration.png" usemap="#menu_administration_map" alt=""/>
+		</div>
+
+		<map name="menu_administration_map" id="menu_administration_map">'
+	        <area shape="rect" coords="0,9,165,40"    href="../admin/admin.html" onclick="location.href=this.href+'?contentId=admin_users&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"           onmouseover="javascript:changeImage('menu_administration', 'menu_admin_users', false);"            onmouseout="javascript:changeImage('menu_administration', 'menu_administration', false);" alt="Users"/>
+	        <area shape="rect" coords="0,42,165,75"   href="../admin/admin.html" onclick="location.href=this.href+'?contentId=admin_user_approvals&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"  onmouseover="javascript:changeImage('menu_administration', 'menu_admin_user_approvals', false);"   onmouseout="javascript:changeImage('menu_administration', 'menu_administration', false);" alt="User Approvals"/>
+	        <area shape="rect" coords="0,77,165,107"  href="../admin/admin.html" onclick="location.href=this.href+'?contentId=admin_tokens&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"          onmouseover="javascript:changeImage('menu_administration', 'menu_admin_tokens', false);"           onmouseout="javascript:changeImage('menu_administration', 'menu_administration', false);" alt="Tokens"/>
+	        <area shape="rect" coords="0,109,165,143" href="../admin/admin.html" onclick="location.href=this.href+'?contentId=admin_company_details&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;" onmouseover="javascript:changeImage('menu_administration', 'menu_admin_company_details', false);"  onmouseout="javascript:changeImage('menu_administration', 'menu_administration', false);" alt="Company Details"/>
+	        <area shape="rect" coords="0,176,165,209" href="../admin/admin.html" onclick="location.href=this.href+'?contentId=admin_audit_login&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"     onmouseover="javascript:changeImage('menu_administration', 'menu_admin_audit_login', false);"      onmouseout="javascript:changeImage('menu_administration', 'menu_administration', false);" alt="Audit - Login and Access"/>
+	        <area shape="rect" coords="0,211,165,242" href="../admin/admin.html" onclick="location.href=this.href+'?contentId=admin_audit_activity&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"  onmouseover="javascript:changeImage('menu_administration', 'menu_admin_audit_activity', false);"   onmouseout="javascript:changeImage('menu_administration', 'menu_administration', false);" alt="Audit - Activity"/>
+	        <area shape="rect" coords="0,244,165,276" href="../admin/admin.html" onclick="location.href=this.href+'?contentId=admin_account_names&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"   onmouseover="javascript:changeImage('menu_administration', 'menu_admin_account_names', false);"    onmouseout="javascript:changeImage('menu_administration', 'menu_administration', false);" alt="Accounts Names"/>
+	        <area shape="rect" coords="0,278,165,309" href="../admin/admin.html" onclick="location.href=this.href+'?contentId=admin_alerts&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"          onmouseover="javascript:changeImage('menu_administration', 'menu_admin_alerts', false);"           onmouseout="javascript:changeImage('menu_administration', 'menu_administration', false);" alt="Alerts"/>
+	        <area shape="rect" coords="0,311,165,342" href="../admin/admin.html" onclick="location.href=this.href+'?contentId=admin_alert_recip&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"     onmouseover="javascript:changeImage('menu_administration', 'menu_admin_alert_recip', false);"      onmouseout="javascript:changeImage('menu_administration', 'menu_administration', false);" alt="Alert Recipients"/>
+	        <area shape="rect" coords="0,344,165,377" href="../admin/admin.html" onclick="location.href=this.href+'?contentId=admin_import_maps&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"     onmouseover="javascript:changeImage('menu_administration', 'menu_admin_import_maps', false);"      onmouseout="javascript:changeImage('menu_administration', 'menu_administration', false);" alt="Import Maps"/>
+	        <area shape="rect" coords="0,379,165,412" href="../admin/admin.html" onclick="location.href=this.href+'?contentId=admin_import_files&hotspots_on='+hotspots_on+'&hide_hotspots_toggle='+hide_hotspots_toggle;return false;"    onmouseover="javascript:changeImage('menu_administration', 'menu_admin_import_files', false);"     onmouseout="javascript:changeImage('menu_administration', 'menu_administration', false);" alt="Import Files"/>
+	    </map>
+	</div>
+	
+	<!-- CONTENT -->
+	<div id="content_panel">
+		<div class="image_layer" style="top:0px;left:0px;position:absolute">
+			<img class="disableable" src="../../images/home/home.png" usemap="#home_default_map" alt=""/>
+		</div>
+		
+		<div class="hotspot_layer" style="top:0px;left:0px;position:absolute">
+			<img class="disableable" src="../../images/home/home_hs.png" usemap="#home_default_map" alt=""/>
+		</div>
+
+
+		<div id="widget1_id" class="popover" style="left:350px;top:1443px;height:286px;width:585px;position:absolute">
+			<img id="widget1_img_id" src="../../images/home/notification_widget.png" usemap="" alt=""/>
+
+			<map name="widget1_map" id="widget1_map">		
+		    </map>
+		</div>
+
+		<div id="widget2_id" class="popover" style="left:985px;top:1443px;height:286px;width:585px;position:absolute">
+			<img id="widget2_img_id" src="../../images/home/qt_widget.png" usemap="" alt=""/>
+
+			<map name="widget2_map" id="widget2_map">		
+		    </map>
+		</div>
+
+		<div id="column1_id" class="popover" style="left:983px;top:570px;height:207px;width:178px;position:absolute">
+			<img id="column1_img_id" src="../../images/home/s_ledger_only.png" usemap="#column1_map" alt=""/>
+
+			<map name="column1_map" id="column1_map">		
+		    </map>
+		</div>
+
+		<div id="column2_id" class="popover" style="left:1160px;top:570px;height:207px;width:178px;position:absolute">
+			<img id="column2_img_id" src="../../images/home/s_available_only.png" usemap="#column2_map" alt=""/>
+
+			<map name="column2_map" id="column2_map">		
+		    </map>
+		</div>
+
+		<map name="home_default_map" id="home_default_map">		
+	        <area shape="rect" coords="370,262,459,299" href="javascript:changeImage('content_panel', 'home_default', true)"                alt="Accounts Tab"/>
+	        <area shape="rect" coords="460,262,536,299" href="javascript:changeImage('content_panel', 'home_groups_tab', true)"             alt="Groups Tab"/>
+	        <area shape="rect" coords="537,262,627,299" href="javascript:changeImage('content_panel', 'home_reporting_tab', true)"          alt="Reporting Tab"/>
+	        <area shape="rect" coords="628,262,779,299" href="javascript:changeImage('content_panel', 'home_transaction_search_tab', true)" alt="Transaction Search Tab"/>
+
+	        <area shape="rect" coords="448,522,698,556"   href="javascript:showPopover('list_filter_popover', '448', '556', true)"              alt="Show Filter List Dropdown"/>
+	        <area shape="rect" coords="1312,110,1562,141" href="javascript:showPopover('add_widget_list_popover', '1312', '141', true)"         alt="Show Add Widget List Dropdown"/>
+	        <area shape="rect" coords="1533,214,1551,232" href="javascript:showPopover('account_widget_settings_popover', '1470', '125', true)" alt="Show Account Widget Settings Popover"/>
+	        <area shape="rect" coords="1279,346,1413,368" href="javascript:changeImage('content_panel', 'home_refresh', true)"                  alt="Refresh Balances"/>
+	        <area shape="rect" coords="429,684,461,699"   href="javascript:changeImage('content_panel', 'account_view', true)"                  alt="View"/>
+	        <area shape="rect" coords="1489,569,1531,608" href="javascript:showPopover('dashboard_column_view_popover', '410', '606', true)"    alt="Show Dashboard Column View Popover"/>
+	    </map>
+	    
+		<map name="home_refresh_map" id="home_refresh_map">
+	        <area shape="rect" coords="370,262,459,299" href="javascript:changeImage('content_panel', 'home_default', true)"                alt="Accounts Tab"/>
+	        <area shape="rect" coords="460,262,536,299" href="javascript:changeImage('content_panel', 'home_groups_tab', true)"             alt="Groups Tab"/>
+	        <area shape="rect" coords="537,262,627,299" href="javascript:changeImage('content_panel', 'home_reporting_tab', true)"          alt="Reporting Tab"/>
+	        <area shape="rect" coords="628,262,779,299" href="javascript:changeImage('content_panel', 'home_transaction_search_tab', true)" alt="Transaction Search Tab"/>
+
+	        <area shape="rect" coords="448,522,698,556"   href="javascript:showPopover('list_filter_popover', '448', '556', true)"              alt="Show Filter List Dropdown"/>
+	        <area shape="rect" coords="429,684,461,699"   href="javascript:changeImage('content_panel', 'account_view', true)"                  alt="View"/>
+	        <area shape="rect" coords="1279,346,1413,368" href="javascript:changeImage('content_panel', 'home_default', true)"                  alt="Refresh Balances"/>
+		</map>	
+
+		<map name="account_view_map" id="account_view_map">
+	        <area shape="rect" coords="345,111,370,138"     href="javascript:changeImage('content_panel', 'home_default', true)"        alt="Back Button"/>		
+	        <area shape="rect" coords="1060,529,1128,556"   href="javascript:changeImage('content_panel', 'account_check_image', true)" alt="Check Image 1"/>		
+
+	        <area shape="rect" coords="1060,616,1128,643"   href="javascript:changeImage('content_panel', 'account_check_image_deposit', true)" alt="Check Image 2"/>		
+		</map>
+
+		<map name="account_check_image_map" id="account_check_image_map">
+	        <area shape="rect" coords="345,111,370,138"     href="javascript:changeImage('content_panel', 'account_view', true)"        alt="Back Button"/>		
+
+	        <area shape="rect" coords="311,760,349,794"     onmouseover="javascript:showPopover('flip_popover', '315', '728', false);"          onmouseout="javascript:hidePopover('flip_popover');"     alt="Flip Image"/>		
+	        <area shape="rect" coords="354,760,398,794"     onmouseover="javascript:showPopover('invert_popover', '337', '728', false);"        onmouseout="javascript:hidePopover('invert_popover');"   alt="Invert Image"/>		
+	        <area shape="rect" coords="402,760,443,794"     onmouseover="javascript:showPopover('rotate_popover', '380', '728', false);"        onmouseout="javascript:hidePopover('rotate_popover');"   alt="Rotate Image"/>		
+	        <area shape="rect" coords="448,760,492,794"     onmouseover="javascript:showPopover('zoom_in_popover', '440', '728', false);"       onmouseout="javascript:hidePopover('zoom_in_popover');"  alt="Zoom In Image"/>		
+	        <area shape="rect" coords="498,760,541,794"     onmouseover="javascript:showPopover('zoom_out_popover', '484', '728', false);"      onmouseout="javascript:hidePopover('zoom_out_popover');" alt="Zoom Out Image"/>		
+	        <area shape="rect" coords="545,760,586,794"     onmouseover="javascript:showPopover('save_popover', '543', '728', false);"          onmouseout="javascript:hidePopover('save_popover');"     alt="Save Image"/>		
+	        <area shape="rect" coords="590,760,631,794"     onmouseover="javascript:showPopover('print_popover', '590', '728', false);"         onmouseout="javascript:hidePopover('print_popover');"    alt="Print Image"/>		
+		</map>
+
+		<div id="flip_popover" class="popover">
+			<div class="image_layer" style="top:0px;left:0px;position:absolute">
+				<img class="disableable" src="../../images/home/account_check_image_flip.png" usemap="#flip_popover_map" alt=""/>
+			</div>
+			
+			<map id="flip_popover_map" name="flip_popover_map">
+			</map>
+		</div>	        
+
+		<div id="invert_popover" class="popover">
+			<div class="image_layer" style="top:0px;left:0px;position:absolute">
+				<img class="disableable" src="../../images/home/account_check_image_invert.png" usemap="#invert_popover_map" alt=""/>
+			</div>
+			
+			<map id="invert_popover_map" name="invert_popover_map">
+			</map>
+		</div>	        
+
+		<div id="rotate_popover" class="popover">
+			<div class="image_layer" style="top:0px;left:0px;position:absolute">
+				<img class="disableable" src="../../images/home/account_check_image_rotate.png" usemap="#rotate_popover_map" alt=""/>
+			</div>
+			
+			<map id="rotate_popover_map" name="rotate_popover_map">
+			</map>
+		</div>	        
+
+		<div id="zoom_in_popover" class="popover">
+			<div class="image_layer" style="top:0px;left:0px;position:absolute">
+				<img class="disableable" src="../../images/home/account_check_image_zoom1.png" usemap="#zoom_in_popover_map" alt=""/>
+			</div>
+			
+			<map id="zoom_in_popover_map" name="zoom_in_popover_map">
+			</map>
+		</div>	        
+
+		<div id="zoom_out_popover" class="popover">
+			<div class="image_layer" style="top:0px;left:0px;position:absolute">
+				<img class="disableable" src="../../images/home/account_check_image_zoom2.png" usemap="#zoom_out_popover_map" alt=""/>
+			</div>
+			
+			<map id="zoom_out_popover_map" name="zoom_out_popover_map">
+			</map>
+		</div>	        
+
+		<div id="save_popover" class="popover">
+			<div class="image_layer" style="top:0px;left:0px;position:absolute">
+				<img class="disableable" src="../../images/home/account_check_image_save.png" usemap="#save_popover_map" alt=""/>
+			</div>
+			
+			<map id="save_popover_map" name="save_popover_map">
+			</map>
+		</div>	        
+
+		<div id="print_popover" class="popover">
+			<div class="image_layer" style="top:0px;left:0px;position:absolute">
+				<img class="disableable" src="../../images/home/account_check_image_print.png" usemap="#print_popover_map" alt=""/>
+			</div>
+			
+			<map id="print_popover_map" name="print_popover_map">
+			</map>
+		</div>	        
+
+		<map name="account_check_image_deposit_map" id="account_check_image_deposit_map">
+	        <area shape="rect" coords="345,111,370,138"     href="javascript:changeImage('content_panel', 'account_view', true)"        alt="Back Button"/>		
+		</map>
+		
+		<map name="dashboard_add_notification_map" id="dashboard_add_notification_map">		
+	        <area shape="rect" coords="1531,1410,1553,1432" href="javascript:showPopover('notification_widget_settings_popover', '1466', '1343', true);"  alt="Setttings Icon"/>
+	    </map>
+
+		<map name="dashboard_add_notification_settings_resized_map" id="dashboard_add_notification_settings_resized_map">		
+	        <area shape="rect" coords="1312,110,1562,141" href="javascript:showPopover('add_widget_list_popover_2', '1312', '141', true)" alt="Show Add Widget List Dropdown"/>
+	    </map>
+
+		<map name="profile_confirm_map" id="profile_confirm_map">		
+	        <area shape="rect" coords="390,352,510,395" href="javascript:changeImage('content_panel', 'verification_code', true);" onmouseover="javascript:changeImage('content_panel', 'profile_confirm_s', true);" onmouseout="javascript:onmouseout_changeImage('content_panel', 'profile_confirm_s', 'profile_confirm', false);" alt="Send Code Button"/>
+	    </map>
+
+		<map name="verification_code_map" id="verification_code_map">		
+	        <area shape="rect" coords="390,366,510,410" href="javascript:changeImage('content_panel', 'personal_info1_main', true);" onmouseover="javascript:changeImage('content_panel', 'verification_code_s', true);" onmouseout="javascript:onmouseout_changeImage('content_panel', 'verification_code_s', 'verification_code', false);" alt="Verify Button"/>
+	    </map>
+
+		<map name="personal_info1_main_map" id="personal_info1_main_map">		
+	        <area shape="rect" coords="375,180,549,212"  href="javascript:changeImage('content_panel', 'security_questions1', true);"            alt="Security Questions"/>
+	        <area shape="rect" coords="375,225,549,254"  href="javascript:changeImage('content_panel', 'settings1_main', true);"                 alt="Settings"/>
+	        <area shape="rect" coords="375,268,549,298"  href="javascript:changeImage('content_panel', 'alerts1_main', true);"                   alt="Alerts"/>
+	        <area shape="rect" coords="375,312,549,340"  href="javascript:changeImage('content_panel', 'token1_main', true);"                    alt="Token"/>
+ 
+	        <area shape="rect" coords="581,212,1527,310" href="javascript:changeImage('content_panel', 'personal_info2_change_password', true);" alt="Change Password"/>
+	        <area shape="rect" coords="581,318,1527,429" href="javascript:changeImage('content_panel', 'personal_info3_email_address', true);"   alt="Email Addresses"/>
+	        <area shape="rect" coords="581,437,1527,548" href="javascript:changeImage('content_panel', 'personal_info4_phone_numbers', true);"   alt="Phone Numbers"/>
+	        <area shape="rect" coords="581,553,1527,680" href="javascript:changeImage('content_panel', 'personal_info5_time_zones', true);"      alt="Time Zone"/>
+	    </map>
+
+		<map name="personal_info2_change_password_map" id="personal_info2_change_password_map">		
+	        <area shape="rect" coords="375,180,549,212"  href="javascript:changeImage('content_panel', 'security_questions1', true);"            alt="Security Questions"/>
+	        <area shape="rect" coords="375,225,549,254"  href="javascript:changeImage('content_panel', 'settings1_main', true);"                 alt="Settings"/>
+	        <area shape="rect" coords="375,268,549,298"  href="javascript:changeImage('content_panel', 'alerts1_main', true);"                   alt="Alerts"/>
+	        <area shape="rect" coords="375,312,549,340"  href="javascript:changeImage('content_panel', 'token1_main', true);"                    alt="Token"/>
+
+	        <area shape="rect" coords="1431,220,1524,269" href="javascript:changeImage('content_panel', 'personal_info1_main', true);" alt="Close Section"/>
+	        <area shape="rect" coords="581,619,1532,733"  href="javascript:changeImage('content_panel', 'personal_info3_email_address', true);"   alt="Email Addresses"/>
+	        <area shape="rect" coords="581,737,1532,853"  href="javascript:changeImage('content_panel', 'personal_info4_phone_numbers', true);"   alt="Phone Numbers"/>
+	        <area shape="rect" coords="581,857,1532,982"  href="javascript:changeImage('content_panel', 'personal_info5_time_zones', true);"      alt="Time Zone"/>
+	    </map>
+
+		<map name="personal_info3_email_address_map" id="personal_info3_email_address_map">		
+	        <area shape="rect" coords="375,180,549,212"  href="javascript:changeImage('content_panel', 'security_questions1', true);"            alt="Security Questions"/>
+	        <area shape="rect" coords="375,225,549,254"  href="javascript:changeImage('content_panel', 'settings1_main', true);"                 alt="Settings"/>
+	        <area shape="rect" coords="375,268,549,298"  href="javascript:changeImage('content_panel', 'alerts1_main', true);"                   alt="Alerts"/>
+	        <area shape="rect" coords="375,312,549,340"  href="javascript:changeImage('content_panel', 'token1_main', true);"                    alt="Token"/>
+
+	        <area shape="rect" coords="581,212,1532,310"  href="javascript:changeImage('content_panel', 'personal_info2_change_password', true);" alt="Change Password"/>
+	        <area shape="rect" coords="1431,325,1524,374" href="javascript:changeImage('content_panel', 'personal_info1_main', true);"            alt="Close Section"/>
+	        <area shape="rect" coords="581,627,1532,743"  href="javascript:changeImage('content_panel', 'personal_info4_phone_numbers', true);"   alt="Phone Numbers"/>
+	        <area shape="rect" coords="581,746,1532,872"  href="javascript:changeImage('content_panel', 'personal_info5_time_zones', true);"      alt="Time Zone"/>
+	    </map>
+
+		<map name="personal_info4_phone_numbers_map" id="personal_info4_phone_numbers_map">		
+	        <area shape="rect" coords="375,180,549,212"  href="javascript:changeImage('content_panel', 'security_questions1', true);"            alt="Security Questions"/>
+	        <area shape="rect" coords="375,225,549,254"  href="javascript:changeImage('content_panel', 'settings1_main', true);"                 alt="Settings"/>
+	        <area shape="rect" coords="375,268,549,298"  href="javascript:changeImage('content_panel', 'alerts1_main', true);"                   alt="Alerts"/>
+	        <area shape="rect" coords="375,312,549,340"  href="javascript:changeImage('content_panel', 'token1_main', true);"                    alt="Token"/>
+
+	        <area shape="rect" coords="581,212,1532,310"  href="javascript:changeImage('content_panel', 'personal_info2_change_password', true);" alt="Change Password"/>
+	        <area shape="rect" coords="581,318,1532,429"  href="javascript:changeImage('content_panel', 'personal_info3_email_address', true);"   alt="Email Addresses"/>
+	        <area shape="rect" coords="1431,444,1524,493" href="javascript:changeImage('content_panel', 'personal_info1_main', true);"            alt="Close Section"/>
+	        <area shape="rect" coords="581,777,1532,902"  href="javascript:changeImage('content_panel', 'personal_info5_time_zones', true);"      alt="Time Zone"/>
+	    </map>
+
+		<map name="personal_info5_time_zones_map" id="personal_info5_time_zones_map">		
+	        <area shape="rect" coords="375,180,549,212"  href="javascript:changeImage('content_panel', 'security_questions1', true);"            alt="Security Questions"/>
+	        <area shape="rect" coords="375,225,549,254"  href="javascript:changeImage('content_panel', 'settings1_main', true);"                 alt="Settings"/>
+	        <area shape="rect" coords="375,268,549,298"  href="javascript:changeImage('content_panel', 'alerts1_main', true);"                   alt="Alerts"/>
+	        <area shape="rect" coords="375,312,549,340"  href="javascript:changeImage('content_panel', 'token1_main', true);"                    alt="Token"/>
+
+	        <area shape="rect" coords="581,212,1532,310"  href="javascript:changeImage('content_panel', 'personal_info2_change_password', true);" alt="Change Password"/>
+	        <area shape="rect" coords="581,318,1532,429"  href="javascript:changeImage('content_panel', 'personal_info3_email_address', true);"   alt="Email Addresses"/>
+	        <area shape="rect" coords="581,437,1532,548"  href="javascript:changeImage('content_panel', 'personal_info4_phone_numbers', true);"   alt="Phone Numbers"/>
+	        <area shape="rect" coords="1427,560,1526,615" href="javascript:changeImage('content_panel', 'personal_info1_main', true);"            alt="Close Section"/>
+	    </map>
+
+		<map name="security_questions1_map" id="security_questions1_map">		
+	        <area shape="rect" coords="375,113,552,149"  href="javascript:changeImage('content_panel', 'personal_info1_main', true);"            alt="Personal Information"/>
+	        <area shape="rect" coords="375,222,552,256"  href="javascript:changeImage('content_panel', 'settings1_main', true);"                 alt="Settings"/>
+	        <area shape="rect" coords="375,265,552,300"  href="javascript:changeImage('content_panel', 'alerts1_main', true);"                   alt="Alerts"/>
+	        <area shape="rect" coords="375,309,552,342"  href="javascript:changeImage('content_panel', 'token1_main', true);"                    alt="Token"/>
+	    </map>
+
+		<map name="settings1_main_map" id="settings1_main_map">		
+	        <area shape="rect" coords="375,113,552,149"  href="javascript:changeImage('content_panel', 'personal_info1_main', true);"            alt="Personal Information"/>
+	        <area shape="rect" coords="375,157,552,194"  href="javascript:changeImage('content_panel', 'security_questions1', true);"            alt="Security Questions"/>
+	        <area shape="rect" coords="375,266,552,300"  href="javascript:changeImage('content_panel', 'alerts1_main', true);"                   alt="Alerts"/>
+	        <area shape="rect" coords="375,309,552,342"  href="javascript:changeImage('content_panel', 'token1_main', true);"                    alt="Token"/>
+
+	        <area shape="rect" coords="581,242,1532,334"  href="javascript:changeImage('content_panel', 'settings3_manage_start_page', true);"   alt="Manage Default Start Page"/>
+	        <area shape="rect" coords="581,337,1532,429"  href="javascript:changeImage('content_panel', 'settings4_manage_dashboard', true);"    alt="Manage Default Service Dashboard"/>
+	    </map>
+
+		<map name="settings3_manage_start_page_map" id="settings3_manage_start_page_map">		
+	        <area shape="rect" coords="375,113,552,149"    href="javascript:changeImage('content_panel', 'personal_info1_main', true);"            alt="Personal Information"/>
+	        <area shape="rect" coords="375,157,552,194"    href="javascript:changeImage('content_panel', 'security_questions1', true);"            alt="Security Questions"/>
+	        <area shape="rect" coords="375,266,552,300"    href="javascript:changeImage('content_panel', 'alerts1_main', true);"                   alt="Alerts"/>
+	        <area shape="rect" coords="375,309,552,342"    href="javascript:changeImage('content_panel', 'token1_main', true);"                    alt="Token"/>
+
+	        <area shape="rect" coords="1459,249,1525,303"  href="javascript:changeImage('content_panel', 'settings1_main', true);"                 alt="Close Section"/>
+	        <area shape="rect" coords="609,392,818,418"    href="javascript:changeImage('content_panel', 'settings3_manage_start_page_1', true);"  alt="Select Preferred Start Page"/>
+	        <area shape="rect" coords="581,449,1532,541"   href="javascript:changeImage('content_panel', 'settings4_manage_dashboard', true);"     alt="Manage Default Service Dashboard"/>
+	    </map>
+
+		<map name="settings3_manage_start_page_1_map" id="settings3_manage_start_page_1_map">		
+	        <area shape="rect" coords="375,113,552,149"    href="javascript:changeImage('content_panel', 'personal_info1_main', true);"            alt="Personal Information"/>
+	        <area shape="rect" coords="375,157,552,194"    href="javascript:changeImage('content_panel', 'security_questions1', true);"            alt="Security Questions"/>
+	        <area shape="rect" coords="375,266,552,300"    href="javascript:changeImage('content_panel', 'alerts1_main', true);"                   alt="Alerts"/>
+	        <area shape="rect" coords="375,309,552,342"    href="javascript:changeImage('content_panel', 'token1_main', true);"                    alt="Token"/>
+
+	        <area shape="rect" coords="1459,249,1525,303"  href="javascript:changeImage('content_panel', 'settings1_main', true);"                 alt="Close Section"/>
+	        <area shape="rect" coords="629,398,905,435"    href="javascript:showPopover('start_page_list_popover', '633', '62', true);"            alt="Show Start Page List"/>
+	        <area shape="rect" coords="581,545,1532,636"   href="javascript:changeImage('content_panel', 'settings4_manage_dashboard', true);"     alt="Manage Default Service Dashboard"/>
+	    </map>
+
+		<map name="settings4_manage_dashboard_map" id="settings4_manage_dashboard_map">		
+	        <area shape="rect" coords="375,113,552,149"    href="javascript:changeImage('content_panel', 'personal_info1_main', true);"            alt="Personal Information"/>
+	        <area shape="rect" coords="375,157,552,194"    href="javascript:changeImage('content_panel', 'security_questions1', true);"            alt="Security Questions"/>
+	        <area shape="rect" coords="375,266,552,300"    href="javascript:changeImage('content_panel', 'alerts1_main', true);"                   alt="Alerts"/>
+	        <area shape="rect" coords="375,309,552,342"    href="javascript:changeImage('content_panel', 'token1_main', true);"                    alt="Token"/>
+
+	        <area shape="rect" coords="581,242,1532,334"   href="javascript:changeImage('content_panel', 'settings3_manage_start_page', true);"    alt="Manage Default Start Page"/>
+	        <area shape="rect" coords="1459,344,1525,399"  href="javascript:changeImage('content_panel', 'settings1_main', true);"                 alt="Close Section"/>
+
+	        <area shape="rect" coords="607,462,943,488"    href="javascript:changeImage('content_panel', 'settings4_manage_dashboard_1', true)"    alt="Select Preferred Default Service Dashboard"/>
+	    </map>
+
+		<map name="settings4_manage_dashboard_1_map" id="settings4_manage_dashboard_1_map">		
+	        <area shape="rect" coords="375,113,552,149"    href="javascript:changeImage('content_panel', 'personal_info1_main', true);"            alt="Personal Information"/>
+	        <area shape="rect" coords="375,157,552,194"    href="javascript:changeImage('content_panel', 'security_questions1', true);"            alt="Security Questions"/>
+	        <area shape="rect" coords="375,266,552,300"    href="javascript:changeImage('content_panel', 'alerts1_main', true);"                   alt="Alerts"/>
+	        <area shape="rect" coords="375,309,552,342"    href="javascript:changeImage('content_panel', 'token1_main', true);"                    alt="Token"/>
+
+	        <area shape="rect" coords="581,242,1532,334"   href="javascript:changeImage('content_panel', 'settings3_manage_start_page', true);"    alt="Manage Default Start Page"/>
+	        <area shape="rect" coords="1459,344,1525,399"  href="javascript:changeImage('content_panel', 'settings1_main', true);"                 alt="Close Section"/>
+	        <area shape="rect" coords="632,472,903,505"    href="javascript:showPopover('service_dashboard_list_popover', '633', '474', false);"   alt="Show Service Dashboard List"/>
+	    </map>
+
+		<div id="service_dashboard_list_popover" class="popover" style="z-index:-10">
+			<img src="../../images/banner/settings4_manage_dashboard_2.png" alt="" usemap="#service_dashboard_list_map"/>
+
+			<map name="service_dashboard_list_map" id="service_dashboard_list_map">		
+		        <area shape="rect" coords="0,0,268,23"  href="javascript:hidePopover('service_dashboard_list_popover');"                           alt="Close Popover"/>
+		    </map>
+		</div>
+
+		<map name="alerts1_main_map" id="alerts1_main_map">		
+	        <area shape="rect" coords="375,113,552,149"  href="javascript:changeImage('content_panel', 'personal_info1_main', true);"              alt="Personal Information"/>
+	        <area shape="rect" coords="375,157,552,194"  href="javascript:changeImage('content_panel', 'security_questions1', true);"              alt="Security Questions"/>
+	        <area shape="rect" coords="375,203,552,236"  href="javascript:changeImage('content_panel', 'settings1_main', true);"                   alt="Settings"/>
+	        <area shape="rect" coords="375,309,552,343"  href="javascript:changeImage('content_panel', 'token1_main', true);"                      alt="Token"/>
+
+	        <area shape="rect" coords="582,216,1532,307" href="javascript:changeImage('content_panel', 'alerts2_my_profile', true);"               alt="My Profile"/>
+	        <area shape="rect" coords="582,311,1532,402" href="javascript:changeImage('content_panel', 'alerts3_dual_approval', true);"            alt="Dual Approval"/>
+	        <area shape="rect" coords="582,406,1532,496" href="javascript:changeImage('content_panel', 'alerts4_companies', true);"                alt="Companies"/>
+	        <area shape="rect" coords="582,501,1532,592" href="javascript:changeImage('content_panel', 'alerts5_user_maint', true);"               alt="User Maintenance"/>
+	    </map>
+
+		<map name="alerts2_my_profile_map" id="alerts2_my_profile_map">		
+	        <area shape="rect" coords="375,113,552,149"   href="javascript:changeImage('content_panel', 'personal_info1_main', true);"              alt="Personal Information"/>
+	        <area shape="rect" coords="375,157,552,194"   href="javascript:changeImage('content_panel', 'security_questions1', true);"              alt="Security Questions"/>
+	        <area shape="rect" coords="375,203,552,236"   href="javascript:changeImage('content_panel', 'settings1_main', true);"                   alt="Settings"/>
+	        <area shape="rect" coords="375,309,552,343"   href="javascript:changeImage('content_panel', 'token1_main', true);"                      alt="Token"/>
+
+	        <area shape="rect" coords="1459,222,1525,276" href="javascript:changeImage('content_panel', 'alerts1_main', true);"                     alt="Close Section"/>
+	        <area shape="rect" coords="582,745,1532,836"  href="javascript:changeImage('content_panel', 'alerts3_dual_approval', true);"            alt="Dual Approval"/>
+	        <area shape="rect" coords="582,839,1532,931"  href="javascript:changeImage('content_panel', 'alerts4_companies', true);"                alt="Companies"/>
+	        <area shape="rect" coords="582,934,1532,1025" href="javascript:changeImage('content_panel', 'alerts5_user_maint', true);"               alt="User Maintenance"/>
+
+	        <area shape="rect" coords="658,111,692,145"   href="javascript:alert('Alerts specific to user maintenance, involving security sensitive information or changes to entitlements, are flagged as automatic and cannot be turned off.');"               alt="Information Icon"/>
+	    </map>
+
+		<map name="alerts3_dual_approval_map" id="alerts3_dual_approval_map">		
+	        <area shape="rect" coords="375,113,552,149"   href="javascript:changeImage('content_panel', 'personal_info1_main', true);"              alt="Personal Information"/>
+	        <area shape="rect" coords="375,157,552,194"   href="javascript:changeImage('content_panel', 'security_questions1', true);"              alt="Security Questions"/>
+	        <area shape="rect" coords="375,203,552,236"   href="javascript:changeImage('content_panel', 'settings1_main', true);"                   alt="Settings"/>
+	        <area shape="rect" coords="375,309,552,343"   href="javascript:changeImage('content_panel', 'token1_main', true);"                      alt="Token"/>
+
+	        <area shape="rect" coords="582,216,1532,307"  href="javascript:changeImage('content_panel', 'alerts2_my_profile', true);"               alt="My Profile"/>
+	        <area shape="rect" coords="1459,317,1525,371" href="javascript:changeImage('content_panel', 'alerts1_main', true);"                     alt="Close Section"/>   
+	        <area shape="rect" coords="582,655,1532,746"  href="javascript:changeImage('content_panel', 'alerts4_companies', true);"                alt="Companies"/>
+	        <area shape="rect" coords="582,749,1532,841"  href="javascript:changeImage('content_panel', 'alerts5_user_maint', true);"               alt="User Maintenance"/>
+		</map>
+
+		<map name="alerts4_companies_map" id="alerts4_companies_map">		
+	        <area shape="rect" coords="375,113,552,149"   href="javascript:changeImage('content_panel', 'personal_info1_main', true);"              alt="Personal Information"/>
+	        <area shape="rect" coords="375,157,552,194"   href="javascript:changeImage('content_panel', 'security_questions1', true);"              alt="Security Questions"/>
+	        <area shape="rect" coords="375,203,552,236"   href="javascript:changeImage('content_panel', 'settings1_main', true);"                   alt="Settings"/>
+	        <area shape="rect" coords="375,309,552,343"   href="javascript:changeImage('content_panel', 'token1_main', true);"                      alt="Token"/>
+
+	        <area shape="rect" coords="582,216,1532,307"  href="javascript:changeImage('content_panel', 'alerts2_my_profile', true);"               alt="My Profile"/>
+	        <area shape="rect" coords="582,311,1532,402"  href="javascript:changeImage('content_panel', 'alerts3_dual_approval', true);"            alt="Dual Approval"/>
+	        <area shape="rect" coords="1459,412,1525,466" href="javascript:changeImage('content_panel', 'alerts1_main', true);"                     alt="Close Section"/>
+	        <area shape="rect" coords="582,771,1532,868"  href="javascript:changeImage('content_panel', 'alerts5_user_maint', true);"               alt="User Maintenance"/>
+		</map>
+
+		<map name="alerts5_user_maint_map" id="alerts5_user_maint_map">		
+	        <area shape="rect" coords="375,113,552,149"   href="javascript:changeImage('content_panel', 'personal_info1_main', true);"              alt="Personal Information"/>
+	        <area shape="rect" coords="375,157,552,194"   href="javascript:changeImage('content_panel', 'security_questions1', true);"              alt="Security Questions"/>
+	        <area shape="rect" coords="375,203,552,236"   href="javascript:changeImage('content_panel', 'settings1_main', true);"                   alt="Settings"/>
+	        <area shape="rect" coords="375,309,552,343"   href="javascript:changeImage('content_panel', 'token1_main', true);"                      alt="Token"/>
+
+	        <area shape="rect" coords="582,216,1532,307"  href="javascript:changeImage('content_panel', 'alerts2_my_profile', true);"               alt="My Profile"/>
+	        <area shape="rect" coords="582,311,1532,402"  href="javascript:changeImage('content_panel', 'alerts3_dual_approval', true);"            alt="Dual Approval"/>
+	        <area shape="rect" coords="582,406,1532,496"  href="javascript:changeImage('content_panel', 'alerts4_companies', true);"                alt="Companies"/>
+	        <area shape="rect" coords="1459,508,1525,561" href="javascript:changeImage('content_panel', 'alerts1_main', true);"                     alt="Close Section"/>
+		</map>
+		
+		<map name="token1_main_map" id="token1_main_map">		
+	        <area shape="rect" coords="375,113,552,149"   href="javascript:changeImage('content_panel', 'personal_info1_main', true);"              alt="Personal Information"/>
+	        <area shape="rect" coords="375,157,552,194"   href="javascript:changeImage('content_panel', 'security_questions1', true);"              alt="Security Questions"/>
+	        <area shape="rect" coords="375,203,552,236"   href="javascript:changeImage('content_panel', 'settings1_main', true);"                   alt="Settings"/>
+	        <area shape="rect" coords="375,245,552,281"   href="javascript:changeImage('content_panel', 'alerts1_main', true);"                     alt="Alerts"/>
+
+	        <area shape="rect" coords="577,248,700,275"  href="javascript:changeImage('content_panel', 'token2_activate', true);"                   alt="Activate Token"/>
+	    </map>
+
+		<map name="token2_activate_map" id="token2_activate_map">		
+	        <area shape="rect" coords="375,113,552,149"   href="javascript:changeImage('content_panel', 'personal_info1_main', true);"              alt="Personal Information"/>
+	        <area shape="rect" coords="375,157,552,194"   href="javascript:changeImage('content_panel', 'security_questions1', true);"              alt="Security Questions"/>
+	        <area shape="rect" coords="375,203,552,236"   href="javascript:changeImage('content_panel', 'settings1_main', true);"                   alt="Settings"/>
+	        <area shape="rect" coords="375,245,552,281"   href="javascript:changeImage('content_panel', 'alerts1_main', true);"                     alt="Alerts"/>
+
+	        <area shape="rect" coords="585,346,705,389"  href="javascript:changeImage('content_panel', 'token3_enabled', true);"  onmouseover="javascript:changeImage('content_panel', 'token2_activate_s', true);" onmouseout="javascript:onmouseout_changeImage('content_panel', 'token2_activate_s', 'token2_activate', false);"                 alt="Save Button"/>
+	    </map>
+
+		<map name="token3_enabled_map" id="token3_enabled_map">		
+	        <area shape="rect" coords="375,113,552,149"   href="javascript:changeImage('content_panel', 'personal_info1_main', true);"              alt="Personal Information"/>
+	        <area shape="rect" coords="375,157,552,194"   href="javascript:changeImage('content_panel', 'security_questions1', true);"              alt="Security Questions"/>
+	        <area shape="rect" coords="375,203,552,236"   href="javascript:changeImage('content_panel', 'settings1_main', true);"                   alt="Settings"/>
+	        <area shape="rect" coords="375,245,552,281"   href="javascript:changeImage('content_panel', 'alerts1_main', true);"                     alt="Alerts"/>
+	    </map>
+
+		<div id="add_widget_list_popover" class="popover" style="z-index:-10">
+			<img src="../../images/home/add_widget_dd.png" alt="" usemap=""/>
+			<div id="add_widget_list_popover_scroll" style="overflow-y:scroll;overflow-x:hidden;position:absolute;top:36px;left:1px;width:291px;height:299px;">
+				<div class="image_layer" style="top:0px;left:0px;position:absolute">
+					<img class="disableable" src="../../images/home/add_widget_dd_scroll.png" usemap="#add_widget_list_popover_scroll_map" alt=""/>
+				</div>
+				
+				<div class="hotspot_layer" style="top:0px;left:0px;position:absolute">
+					<img class="disableable" src="../../images/home/add_widget_dd_scroll_hs.png" usemap="#add_widget_list_popover_scroll_map" alt=""/>
+				</div>
+
+				<map name="add_widget_list_popover_scroll_map" id="add_widget_list_popover_scroll_map">		
+			        <area shape="rect" coords="0,429,271,461" href="javascript:changeImage('content_panel', 'dashboard_add_notification', true)" onmouseover="javascript:changeImage('add_widget_list_popover_scroll', 'add_widget_dd_scroll_notifications', false);" onmouseout="javascript:onmouseout_changeImage('add_widget_list_popover_scroll', 'add_widget_dd_scroll_notifications', 'add_widget_dd_scroll', false);" alt="Notifications"/>
+			    </map>
+			</div>
+		</div>
+
+		<div id="add_widget_list_popover_2" class="popover" style="z-index:-10">
+			<img src="../../images/home/add_widget_dd.png" alt="" usemap=""/>
+			<div id="add_widget_list_popover_2_scroll" style="overflow-y:scroll;overflow-x:hidden;position:absolute;top:36px;left:1px;width:291px;height:299px;">
+				<div class="image_layer" style="top:0px;left:0px;position:absolute">
+					<img class="disableable" src="../../images/home/add_widget_dd_scroll2.png" usemap="#add_widget_list_popover_2_scroll_map" alt=""/>
+				</div>
+				
+				<div class="hotspot_layer" style="top:0px;left:0px;position:absolute">
+					<img class="disableable" src="../../images/home/add_widget_dd_scroll2_hs.png" usemap="#add_widget_list_popover_2_scroll_map" alt=""/>
+				</div>
+
+				<map name="add_widget_list_popover_2_scroll_map" id="add_widget_list_popover_2_scroll_map">		
+			        <area shape="rect" coords="0,580,272,614" href="javascript:changeImage('content_panel', 'dashboard_add_quick_transfer', true);showPopover('widget1_id', '350', '1443', false);showPopover('widget2_id', '985', '1443', false);" onmouseover="javascript:changeImage('add_widget_list_popover_2_scroll', 'add_widget_dd_scroll_qt', false);" onmouseout="javascript:onmouseout_changeImage('add_widget_list_popover_2_scroll', 'add_widget_dd_scroll_qt', 'add_widget_dd_scroll2', false);" alt="Quick Transfer"/>
+			    </map>
+			</div>
+		</div>
+
+		<div id="notification_widget_settings_popover" class="popover">
+			<div class="image_layer" style="top:0px;left:0px;position:absolute">
+				<img class="disableable" src="../../images/home/dashboard_add_notification_settings.png" usemap="#notification_widget_settings_popover_map" alt=""/>
+			</div>
+			
+			<div class="hotspot_layer" style="top:0px;left:0px;position:absolute">
+				<img class="disableable" src="../../images/home/dashboard_add_notification_settings_hs.png" usemap="#notification_widget_settings_popover_map" alt=""/>
+			</div>
+
+			<map id="notification_widget_settings_popover_map" name="notification_widget_settings_popover_map">
+		        <area shape="rect" coords="4,33,88,51" href="javascript:changeImage('content_panel', 'dashboard_add_notification_settings_resized', true);"  alt="Resize"/>
+			</map>
+		</div>	        
+
+		<div id="account_widget_settings_popover" class="popover">
+			<div class="image_layer" style="top:0px;left:0px;position:absolute">
+				<img class="disableable" src="../../images/home/account_widget_settings.png" usemap="#account_widget_settings_popover_map" alt=""/>
+			</div>
+			
+			<map id="account_widget_settings_popover_map" name="notification_widget_settings_popover_map">
+		        <area shape="rect" coords="4,33,88,51" href="javascript:changeImage('content_panel', 'dashboard_add_notification_settings_resized', true);"  alt="Resize"/>
+			</map>
+		</div>	        
+
+		<div id="list_filter_popover" class="popover" style="z-index:-10">
+			<img src="../../images/home/list_filter.png" alt="" usemap=""/>
+			<div id="list_filter_popover_scroll" style="overflow-y:scroll;overflow-x:hidden;position:absolute;top:0px;left:0px;width:250px;height:302px;">
+				<div class="image_layer" style="top:0px;left:0px;position:absolute">
+					<img class="disableable" src="../../images/home/list_filter_scroll.png" usemap="#list_filter_popover_scroll_map" alt=""/>
+				</div>
+				
+				<div class="hotspot_layer" style="top:0px;left:0px;position:absolute">
+					<img class="disableable" src="../../images/home/list_filter_scroll.png" usemap="#list_filter_popover_scroll_map" alt=""/>
+				</div>
+
+				<map name="list_filter_popover_scroll_map" id="list_filter_popover_scroll_map">		
+			    </map>
+			</div>
+		</div>
+
+		<div id="dashboard_column_view_popover" class="popover" style="z-index:-10">
+			<div class="image_layer" style="top:0px;left:0px;position:absolute">
+				<img class="disableable" src="../../images/home/column_view.png" usemap="#dashboard_column_view_popover_map" alt=""/>
+			</div>
+			
+			<div class="hotspot_layer" style="top:0px;left:0px;position:absolute">
+				<img class="disableable" src="../../images/home/column_view_hs.png" usemap="#dashboard_column_view_popover_map" alt=""/>
+			</div>
+
+			<map id="dashboard_column_view_popover_map" name="dashboard_column_view_popover_map">
+		        <area shape="rect" coords="378,295,688,320" href="javascript:changeImage('dashboard_column_view_popover', 'dashboard_column_view_popover_marked', false);"  alt="Select"/>
+			</map>
+
+			<map id="dashboard_column_view_popover_marked_map" name="dashboard_column_view_popover_marked_map">
+		        <area shape="rect" coords="378,295,688,320" href="javascript:changeImage('dashboard_column_view_popover', 'dashboard_column_view_popover', false);"  alt="Unselect"/>
+
+		        <area shape="rect" coords="11,363,91,396" href="javascript:changeImage('content_panel', 'home_new_view', true);"  alt="Update Button"/>
+			</map>
+		</div>
+
+		<map name="dashboard_add_quick_transfer_map" id="dashboard_add_quick_transfer_map">		
+	        <area shape="rect" coords="370,262,459,299" href="javascript:changeImage('content_panel', 'home_default', true)"                alt="Accounts Tab"/>
+	        <area shape="rect" coords="460,262,536,299" href="javascript:changeImage('content_panel', 'home_groups_tab', true)"             alt="Groups Tab"/>
+	        <area shape="rect" coords="537,262,627,299" href="javascript:changeImage('content_panel', 'home_reporting_tab', true)"          alt="Reporting Tab"/>
+	        <area shape="rect" coords="628,262,779,299" href="javascript:changeImage('content_panel', 'home_transaction_search_tab', true)" alt="Transaction Search Tab"/>
+	    </map>
+		
+		<map name="home_new_view_map" id="home_new_view_map">		
+	        <area shape="rect" coords="804,572,983,605" href="javascript:changeImage('content_panel', 'home_new_view_sort', false);showPopover('column1_id', '983', '570', false);showPopover('column2_id', '1160', '570', false);" alt="Sort by Account Number Column"/>
+	    </map>
+
+		<map name="home_new_view_sort_map" id="home_new_view_sort_map">		
+	        <area shape="rect" coords="1325,522,1529,556" href="javascript:showPopover('view_list_popover', '1325', '555', false);" alt="Show View List"/>
+	    </map>
+
+		<div id="view_list_popover" class="popover" style="z-index:-10">
+			<div class="image_layer" style="top:0px;left:0px;position:absolute">
+				<img class="disableable" src="../../images/home/list_view2.png" usemap="#view_list_popover_map" alt=""/>
+			</div>
+			
+			<div class="hotspot_layer" style="top:0px;left:0px;position:absolute">
+				<img class="disableable" src="../../images/home/list_view2_hs.png" usemap="#view_list_popover_map" alt=""/>
+			</div>
+
+			<map name="view_list_popover_map" id="view_list_popover_map">		
+		        <area shape="rect" coords="8,7,111,41" href="javascript:hidePopover('view_list_popover');showPopover('view_list_popover_2', '1325', '555', false);" alt="Save Button"/>
+		    </map>
+		</div>
+
+		<div id="view_list_popover_2" class="popover" style="z-index:-10">
+			<div class="image_layer" style="top:0px;left:0px;position:absolute">
+				<img class="disableable" src="../../images/home/list_view2_name.png" usemap="#view_list_popover_2_map" alt=""/>
+			</div>
+			
+			<div class="hotspot_layer" style="top:0px;left:0px;position:absolute">
+				<img class="disableable" src="../../images/home/list_view2_name_hs.png" usemap="#view_list_popover_2_map" alt=""/>
+			</div>
+
+			<map name="view_list_popover_2_map" id="view_list_popover_2_map">		
+		        <area shape="rect" coords="140,4,220,38" href="javascript:hidePopover('view_list_popover_2');changeImage('content_panel', 'home_new_view_set_default', false);" alt="Go Button"/>
+		    </map>
+		</div>
+
+		<map name="home_new_view_set_default_map" id="home_new_view_set_default_map">		
+	        <area shape="rect" coords="1320,522,1435,556" href="javascript:changeImage('content_panel', 'home_new_view_saved', false);" onmouseover="javascript:changeImage('content_panel', 'home_new_view_set_default_s', false);" onmouseout="javascript:onmouseout_changeImage('content_panel', 'home_new_view_set_default_s', 'home_new_view_set_default', false);" alt="Set As Default Button"/>
+	    </map>
+
+		<map name="home_new_view_saved_map" id="home_new_view_saved_map">		
+	        <area shape="rect" coords="1438,522,1529,555" href="javascript:showPopover('my_view_list_popover', '1438', '555', false);" alt="Show View List"/>
+	    </map>
+
+		<div id="my_view_list_popover" class="popover" style="z-index:-10">
+			<div class="image_layer" style="top:0px;left:0px;position:absolute">
+				<img class="disableable" src="../../images/home/my_view.png" usemap="#my_view_list_popover_map" alt=""/>
+			</div>
+			
+			<div class="hotspot_layer" style="top:0px;left:0px;position:absolute">
+				<img class="disableable" src="../../images/home/my_view_hs.png" usemap="#my_view_list_popover_map" alt=""/>
+			</div>
+
+			<map name="my_view_list_popover_map" id="my_view_list_popover_map">		
+		        <area shape="rect" coords="4,52,163,88" href="javascript:hidePopover('my_view_list_popover');hidePopover('column1_id');hidePopover('column2_id');changeImage('content_panel', 'list_view_deposits', false);"  alt="Deposit Accounts List Item"/>
+		    </map>
+		    
+			<map name="list_view_deposits_map" id="list_view_deposits_map">		
+		        <area shape="rect" coords="370,262,459,299" href="javascript:changeImage('content_panel', 'home_default', true)"                alt="Accounts Tab"/>
+		        <area shape="rect" coords="460,262,536,299" href="javascript:changeImage('content_panel', 'home_groups_tab', true)"             alt="Groups Tab"/>
+		        <area shape="rect" coords="537,262,627,299" href="javascript:changeImage('content_panel', 'home_reporting_tab', true)"          alt="Reporting Tab"/>
+		        <area shape="rect" coords="628,262,779,299" href="javascript:changeImage('content_panel', 'home_transaction_search_tab', true)" alt="Transaction Search Tab"/>
+		    </map>
+		    
+		</div>
+
+		<!-- Groups Tab -->
+		
+		<map name="home_groups_tab_map" id="home_groups_tab_map">
+	        <area shape="rect" coords="370,262,459,299" href="javascript:changeImage('content_panel', 'home_default', true)"                alt="Accounts Tab"/>
+	        <area shape="rect" coords="460,262,536,299" href="javascript:changeImage('content_panel', 'home_groups_tab', true)"             alt="Groups Tab"/>
+	        <area shape="rect" coords="537,262,627,299" href="javascript:changeImage('content_panel', 'home_reporting_tab', true)"          alt="Reporting Tab"/>
+	        <area shape="rect" coords="628,262,779,299" href="javascript:changeImage('content_panel', 'home_transaction_search_tab', true)" alt="Transaction Search Tab"/>
+
+			<area shape="rect" coords="874,488,1046,522" href="javascript:showModalPopover('create_account_group_popover');"  alt="Create Account Groups Button"/>
+		</map>	
+
+		<map name="home_group_added_map" id="home_group_added_map">		
+	        <area shape="rect" coords="370,262,459,299" href="javascript:changeImage('content_panel', 'home_default', true)"                alt="Accounts Tab"/>
+	        <area shape="rect" coords="460,262,536,299" href="javascript:changeImage('content_panel', 'home_groups_tab', true)"             alt="Groups Tab"/>
+	        <area shape="rect" coords="537,262,627,299" href="javascript:changeImage('content_panel', 'home_reporting_tab', true)"          alt="Reporting Tab"/>
+	        <area shape="rect" coords="628,262,779,299" href="javascript:changeImage('content_panel', 'home_transaction_search_tab', true)" alt="Transaction Search Tab"/>
+	    </map>
+
+		<!-- Reporting Tab -->
+		
+		<map name="home_reporting_tab_map" id="home_reporting_tab_map">
+	        <area shape="rect" coords="370,262,459,299" href="javascript:changeImage('content_panel', 'home_default', true)"                alt="Accounts Tab"/>
+	        <area shape="rect" coords="460,262,536,299" href="javascript:changeImage('content_panel', 'home_groups_tab', true)"             alt="Groups Tab"/>
+	        <area shape="rect" coords="537,262,627,299" href="javascript:changeImage('content_panel', 'home_reporting_tab', true)"          alt="Reporting Tab"/>
+	        <area shape="rect" coords="628,262,779,299" href="javascript:changeImage('content_panel', 'home_transaction_search_tab', true)" alt="Transaction Search Tab"/>
+
+			<area shape="rect" coords="386,402,471,437"   href="javascript:showPopover('saved_reports_popover', '386', '436', false);"        alt="Show Saved Reports List"/>
+			<area shape="rect" coords="383,1180,503,1202" href="javascript:changeImage('content_panel', 'home_reporting_tab_marked', true);"  alt="Save this Report"/>
+		</map>	
+
+		<div id="saved_reports_popover" class="popover">
+			<div class="image_layer" style="top:0px;left:0px;position:absolute">
+				<img src="../../images/home/reports_search1.png" usemap="#saved_reports_popover_map" alt=""/>
+			</div>
+			
+			<div class="hotspot_layer" style="top:0px;left:0px;position:absolute">
+				<img src="../../images/home/reports_search1_hs.png" usemap="#saved_reports_popover_map" alt=""/>
+			</div>
+
+			<map id="saved_reports_popover_map" name="saved_reports_popover_map">
+		        <area shape="rect" coords="4,151,117,170" href="javascript:changeImage('content_panel', 'reports_search_results', true);"  alt="Prior Day Credits"/>
+			</map>
+		</div>
+
+		<map name="reports_search_results_map" id="reports_search_results_map">
+	        <area shape="rect" coords="370,262,459,299" href="javascript:changeImage('content_panel', 'home_default', true)"                alt="Accounts Tab"/>
+	        <area shape="rect" coords="460,262,536,299" href="javascript:changeImage('content_panel', 'home_groups_tab', true)"             alt="Groups Tab"/>
+	        <area shape="rect" coords="537,262,627,299" href="javascript:changeImage('content_panel', 'home_reporting_tab', true)"          alt="Reporting Tab"/>
+	        <area shape="rect" coords="628,262,779,299" href="javascript:changeImage('content_panel', 'home_transaction_search_tab', true)" alt="Transaction Search Tab"/>
+		</map>	
+		
+		<map name="home_reporting_tab_marked_map" id="home_reporting_tab_marked_map">
+	        <area shape="rect" coords="370,262,459,299" href="javascript:changeImage('content_panel', 'home_default', true)"                alt="Accounts Tab"/>
+	        <area shape="rect" coords="460,262,536,299" href="javascript:changeImage('content_panel', 'home_groups_tab', true)"             alt="Groups Tab"/>
+	        <area shape="rect" coords="537,262,627,299" href="javascript:changeImage('content_panel', 'home_reporting_tab', true)"          alt="Reporting Tab"/>
+	        <area shape="rect" coords="628,262,779,299" href="javascript:changeImage('content_panel', 'home_transaction_search_tab', true)" alt="Transaction Search Tab"/>
+
+			<area shape="rect" coords="407,1341,487,1375" href="javascript:changeImage('content_panel', 'home_reporting_tab_submit_results', true);"  alt="Submit Button"/>
+		</map>	
+		
+		<map name="home_reporting_tab_submit_results_map" id="home_reporting_tab_submit_results_map">
+	        <area shape="rect" coords="370,262,459,299" href="javascript:changeImage('content_panel', 'home_default', true)"                alt="Accounts Tab"/>
+	        <area shape="rect" coords="460,262,536,299" href="javascript:changeImage('content_panel', 'home_groups_tab', true)"             alt="Groups Tab"/>
+	        <area shape="rect" coords="537,262,627,299" href="javascript:changeImage('content_panel', 'home_reporting_tab', true)"          alt="Reporting Tab"/>
+	        <area shape="rect" coords="628,262,779,299" href="javascript:changeImage('content_panel', 'home_transaction_search_tab', true)" alt="Transaction Search Tab"/>
+
+			<area shape="rect" coords="1422,612,1483,633" href="javascript:showModalPopover('export_data_popover');"  alt="Export Button"/>
+		</map>	
+		
+		<!-- Transaction Search Tab -->
+
+		<map name="home_transaction_search_tab_map" id="home_transaction_search_tab_map">
+	        <area shape="rect" coords="370,262,459,299" href="javascript:changeImage('content_panel', 'home_default', true)"                alt="Accounts Tab"/>
+	        <area shape="rect" coords="460,262,536,299" href="javascript:changeImage('content_panel', 'home_groups_tab', true)"             alt="Groups Tab"/>
+	        <area shape="rect" coords="537,262,627,299" href="javascript:changeImage('content_panel', 'home_reporting_tab', true)"          alt="Reporting Tab"/>
+	        <area shape="rect" coords="628,262,779,299" href="javascript:changeImage('content_panel', 'home_transaction_search_tab', true)" alt="Transaction Search Tab"/>
+
+			<area shape="rect" coords="381,1085,462,1119" href="javascript:changeImage('content_panel', 'home_transaction_search_results', true);"  alt="Submit Button"/>
+		</map>	
+		
+		<map name="home_transaction_search_results_map" id="home_transaction_search_results_map">
+	        <area shape="rect" coords="370,262,459,299" href="javascript:changeImage('content_panel', 'home_default', true)"                alt="Accounts Tab"/>
+	        <area shape="rect" coords="460,262,536,299" href="javascript:changeImage('content_panel', 'home_groups_tab', true)"             alt="Groups Tab"/>
+	        <area shape="rect" coords="537,262,627,299" href="javascript:changeImage('content_panel', 'home_reporting_tab', true)"          alt="Reporting Tab"/>
+	        <area shape="rect" coords="628,262,779,299" href="javascript:changeImage('content_panel', 'home_transaction_search_tab', true)" alt="Transaction Search Tab"/>
+		</map>	
+
+	</div>
+
+	<div id="start_page_list_popover" class="popover" style="z-index:-10">
+		<img src="../../images/banner/settings3_manage_start_page_2.png" alt="" usemap=""/>
+		<div style="overflow-y:scroll;overflow-x:hidden;position:absolute;top:1px;left:1px;width:267px;height:460px;">
+			<img src="../../images/banner/settings3_manage_start_page_2_full.png" alt=""/>
+		</div>
+	</div>
+	
+	<!-- Modal Popovers -->
+	
+	<div id="create_account_group_popover" class="popover">
+		<div class="image_layer" style="top:0px;left:0px;position:absolute">
+			<img src="../../images/home/groups_add1.png" usemap="#create_account_group_popover_map" alt=""/>
+		</div>
+		
+		<div class="hotspot_layer" style="top:0px;left:0px;position:absolute">
+			<img src="../../images/home/groups_add1_hs.png" usemap="#create_account_group_popover_map" alt=""/>
+		</div>
+
+		<map id="create_account_group_popover_map" name="create_account_group_popover_map">
+	        <area shape="rect" coords="769,123,860,142" href="javascript:changeImage('create_account_group_popover', 'create_account_group_popover_2', false);"  alt="Add Group Button"/>
+		</map>
+
+		<map id="create_account_group_popover_2_map" name="create_account_group_popover_2_map">
+	        <area shape="rect" coords="884,403,897,420" href="javascript:changeImage('create_account_group_popover', 'create_account_group_popover_3', false);"  alt="Scroll Down Arrow"/>
+		</map>
+
+		<map id="create_account_group_popover_3_map" name="create_account_group_popover_3_map">
+	        <area shape="rect" coords="21,367,222,398" href="javascript:showPopover('select_group_popover', '21', '398', false);"  alt="Show Select Group List"/>
+		</map>
+
+		<div id="select_group_popover" class="popover">
+			<div class="image_layer" style="top:0px;left:0px;position:absolute">
+				<img src="../../images/home/groups_add4_dd.png" usemap="#select_group_popover_map" alt=""/>
+			</div>
+			
+			<div class="hotspot_layer" style="top:0px;left:0px;position:absolute">
+				<img src="../../images/home/groups_add4_dd_hs.png" usemap="#select_group_popover_map" alt=""/>
+			</div>
+
+			<map id="select_group_popover_map" name="select_group_popover_map">
+		        <area shape="rect" coords="4,39,203,66" href="javascript:hidePopover('select_group_popover');changeImage('create_account_group_popover', 'create_account_group_popover_4', false);"  alt="Group Item"/>
+			</map>
+		</div>
+
+		<map id="create_account_group_popover_4_map" name="create_account_group_popover_4_map">
+	        <area shape="rect" coords="224,374,401,394" href="javascript:changeImage('create_account_group_popover', 'create_account_group_popover_5', false);"  alt="Move Selected Accounts Button"/>
+		</map>
+
+		<map id="create_account_group_popover_5_map" name="create_account_group_popover_5_map">
+	        <area shape="rect" coords="21,430,102,464" href="javascript:hideModalPopover();changeImage('content_panel', 'home_group_added', false);"  alt="Save Button"/>
+		</map>
+
+	</div>	        
+
+	<div id="export_data_popover" class="popover">
+		<div class="image_layer" style="top:0px;left:0px;position:absolute">
+			<img src="../../images/home/home_reporting_tab_export.png" usemap="#export_data_popover_map" alt=""/>
+		</div>
+		
+		<div class="hotspot_layer" style="top:0px;left:0px;position:absolute">
+			<img src="../../images/home/home_reporting_tab_export_hs.png" usemap="#export_data_popover_map" alt=""/>
+		</div>
+
+		<map id="export_data_popover_map" name="export_data_popover_map">
+	        <area shape="rect" coords="36,98,436,134"   href="javascript:showPopover('export_type_list_popover', '36', '132', false);"  alt="Show Export Type List"/>
+
+	        <area shape="rect" coords="858,19,879,40"   href="javascript:hideModalPopover('export_data_popover');"  alt="Close Button"/>
+	        <area shape="rect" coords="112,163,192,197" href="javascript:hideModalPopover('export_data_popover');" onmouseover="javascript:changeImage('export_data_popover', 'home_reporting_tab_export_s', false);" onmouseout="javascript:onmouseout_changeImage('export_data_popover', 'home_reporting_tab_export_s', 'home_reporting_tab_export', false);" alt="Cancel Button"/>
+
+		</map>
+
+		<div id="export_type_list_popover" class="popover">
+			<div class="image_layer" style="top:0px;left:0px;position:absolute">
+				<img src="../../images/home/home_reporting_tab_export_types.png" usemap="" alt=""/>
+			</div>
+			
+			<div class="hotspot_layer" style="top:0px;left:0px;position:absolute">
+				<img src="../../images/home/home_reporting_tab_export_types.png" usemap="" alt=""/>
+			</div>
+		</div>
+
+	</div>	 
+</body>
+
+</html>
